@@ -15,10 +15,6 @@ for id_ in card_list:
 
 root = tk.Tk()
 
-mfx_t = tk.BooleanVar(root)
-afx_t = tk.BooleanVar(root)
-efx_t = tk.BooleanVar(root)
-
 m_color = tk.StringVar(root, value='R')
 a_color = tk.StringVar(root)
 
@@ -37,11 +33,11 @@ def create_card():
     main_color = m_color.get()
     aux_color = a_color.get()
     mfx = mfx_in.get()
-    mfx_turn = mfx_t.get()
+    mfx_turn = mfx_turn_in.get()
     afx = afx_in.get()
-    afx_turn = afx_t.get()
+    afx_turn = afx_turn_in.get()
     efx = efx_in.get()
-    efx_turn = efx_t.get()
+    efx_turn = efx_turn_in.get()
     try:
         cost_out = int(cost_out)
         power_out = int(power_out)
@@ -137,7 +133,7 @@ tk.Label(effects, text="Effect Description                    Effect Turn").grid
 
 mfx_frame = tk.Frame(effects, relief=tk.SUNKEN, borderwidth=3)
 mfx_in = tk.Entry(mfx_frame, width=30)
-mfx_turn_in = tk.Checkbutton(mfx_frame, variable=mfx_t)
+mfx_turn_in = tk.Entry(mfx_frame, width=2)
 tk.Label(mfx_frame, text="Main").grid(column=0, row=0, sticky='nw')
 mfx_in.grid(column=0, row=1)
 mfx_turn_in.grid(column=1, row=1)
@@ -145,7 +141,7 @@ mfx_frame.grid(column=0, row=1)
 
 afx_frame = tk.Frame(effects, relief=tk.SUNKEN, borderwidth=3)
 afx_in = tk.Entry(afx_frame, width=30)
-afx_turn_in = tk.Checkbutton(afx_frame, variable=afx_t)
+afx_turn_in = tk.Entry(afx_frame, width=2)
 tk.Label(afx_frame, text="Auxiliary").grid(column=0, row=0, sticky='nw')
 afx_in.grid(column=0, row=1)
 afx_turn_in.grid(column=1, row=1)
@@ -153,7 +149,7 @@ afx_frame.grid(column=0, row=2)
 
 efx_frame = tk.Frame(effects, relief=tk.SUNKEN, borderwidth=3)
 efx_in = tk.Entry(efx_frame, width=30)
-efx_turn_in = tk.Checkbutton(efx_frame, variable=efx_t)
+efx_turn_in = tk.Entry(efx_frame, width=2)
 tk.Label(efx_frame, text="Equipment").grid(column=0, row=0, sticky='nw')
 efx_in.grid(column=0, row=1)
 efx_turn_in.grid(column=1, row=1)

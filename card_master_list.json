@@ -1,6 +1,6 @@
 {
-    "Cards":{
-        "0001":{
+    "Cards": {
+        "0001": {
             "name": "Merchant of the Deep",
             "cost": 2,
             "power": 1,
@@ -15,7 +15,7 @@
             "efx": "",
             "efx_turn": false
         },
-        "0002":{
+        "0002": {
             "name": "Tiger Lily",
             "cost": 1,
             "power": 3,
@@ -30,7 +30,7 @@
             "efx": "Any unit that attacks the equipped card takes 1 damage after damage calculation.",
             "efx_turn": false
         },
-        "0003":{
+        "0003": {
             "name": "Martian Hunter",
             "cost": 3,
             "power": 3,
@@ -44,7 +44,21 @@
             "afx_turn": true,
             "efx": "",
             "efx_turn": false
+        },
+        "0004": {
+            "name": "Yo-Yo-Yo",
+            "cost": 2,
+            "power": 3,
+            "health": 1,
+            "tribe": "WARRIOR",
+            "main": "R",
+            "aux": "",
+            "mfx": "After this card battles and it is not destroyed; return it to the hand, then you can play one card that has stats totalling 3 or less from your hand as a unit. Its effects are negated and it is destroyed at the end of your turn.",
+            "mfx_turn": "0",
+            "afx": "You can discard one card; play this card as a unit.",
+            "afx_turn": "0",
+            "efx": "",
+            "efx_turn": ""
         }
     }
 }
-
