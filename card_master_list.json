@@ -29,7 +29,22 @@
             "afx_turn": false,
             "efx": "Any unit that attacks the equipped card takes 1 damage after damage calculation.",
             "efx_turn": false
+        },
+        "0003":{
+            "name": "Martian Hunter",
+            "cost": 3,
+            "power": 3,
+            "health": 1,
+            "tribe": "WARRIOR",
+            "main": "R",
+            "aux": "B",
+            "mfx": "If this unit destroys a unit by battle; it gains 1 ATK.",
+            "mfx_turn": false,
+            "afx": "If you control a WARRIOR unit, target a WARRIOR unit you control and one of your opponent's units; destroy both of them.",
+            "afx_turn": true,
+            "efx": "",
+            "efx_turn": false
         }
-
     }
 }
+
