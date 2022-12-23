@@ -1,24 +1,6 @@
 from tkinter import *
 from math import *
-
-class card():
-    def __init__(self,name,cost,power,health,tribe,main,aux,mfx,mfx_turn,afx,afx_turn,efx,efx_turn):
-        self.name = name
-        self.cost = cost
-        self.power = power
-        self.health = health
-        self.tribe = tribe
-        self.main = main
-        self.aux = aux
-        self.mfx = mfx
-        self.mfx_turn = mfx_turn
-        self.afx = afx
-        self.afx_turn = afx_turn
-        self.efx = efx
-        self.efx_turn = efx_turn
-
-    def setcard():
-        pass
+from card_class import *
 
 table = Tk()
 slots = [0,1,2,3,4,5,7,9,10,11,13,14,16,17,18,20,22,23,24,25,26,27]
