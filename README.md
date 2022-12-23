@@ -1,4 +1,4 @@
-# Put your descriptor stuff here
+# Card Game Idea WIP
 ## Rules:
 
 __________________________________________________________
