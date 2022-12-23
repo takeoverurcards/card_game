@@ -15,5 +15,5 @@ class Card():
         self.efx = efx
         self.efx_turn = efx_turn
 
-    def setcard():
+    def set_card():
         pass

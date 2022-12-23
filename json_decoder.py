@@ -3,18 +3,17 @@ import json
 from card_class import *
 
 with open("card_master_list.json", "r") as file:
-    data = json.load(file)
-    cards = data["Cards"]
+    cards = json.load(file)["Cards"]
 
 
-def decode_card(id):
+def decode_card(card_id):
     formatted_id = ""
-    if type(id) == int:
-        for symbol in range(4 - len(str(id))):
+    if type(card_id) == int:
+        for _ in range(4 - len(str(card_id))):
             formatted_id += "0"
-        formatted_id += str(id)
-    elif type(id) == str:
-        formatted_id = id
+        formatted_id += str(card_id)
+    elif type(card_id) == str:
+        formatted_id = card_id
     else:
         raise TypeError("INVALID ID FORMAT")
     card = cards[formatted_id]
@@ -23,5 +22,3 @@ def decode_card(id):
 
 # print(decode_card(1).name)
 # print(decode_card("0001").name)
-
-decode_card(False)
