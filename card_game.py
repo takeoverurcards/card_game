@@ -6,7 +6,7 @@ from json_decoder import *
 table = Tk()
 table.resizable(width=0,height=0)
 table.configure(bg="black")
-table.geometry("777x850")
+# table.geometry("777x850")
 frame = Frame(table, pady=113, bg="black")
 frame.pack()
 
@@ -57,3 +57,5 @@ m11.bind("<Button-1>", lambda i:[hide(),info("0001"),show()])
 m12.bind("<Button-1>", lambda i:[hide(),info("0002"),show()])
 m13.bind("<Button-1>", lambda i:[hide(),info("0003"),show()])
 frame.bind("<Button-1>", lambda i:hide())
+
+table.mainloop()
