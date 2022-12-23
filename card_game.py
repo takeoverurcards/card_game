@@ -2,21 +2,33 @@ from tkinter import *
 from math import *
 
 class card():
-    def __init__(self,name,power,health,tribe,main,aux,mfx,afx):
+    def __init__(self,name,cost,power,health,tribe,main,aux,mfx,mfx_turn,afx,afx_turn,efx,efx_turn):
         self.name = name
+        self.cost = cost
         self.power = power
         self.health = health
         self.tribe = tribe
         self.main = main
         self.aux = aux
         self.mfx = mfx
+        self.mfx_turn = mfx_turn
         self.afx = afx
+        self.afx_turn = afx_turn
+        self.efx = efx
+        self.efx_turn = efx_turn
 
     def setcard():
         pass
 
 table = Tk()
-for i in range(20):
-    Label(table, width=15, height=10, relief=RAISED).grid(row=i%4+1, column=floor(i/4))
-        
+slots = [0,1,2,3,4,5,7,9,10,11,13,14,16,17,18,20,22,23,24,25,26,27]
+for i in slots:
+    Label(table, width=15, height=10, relief=SUNKEN).grid(row=floor(i/7), column=i%7)
+cards = []
+for i in range(1,23):
+    cards.append(Label(table, width=13, height=9, relief=RAISED, text=i))
+[m11,m12,m13,m21,m22,m23,a11,a12,a13,a14,a15,a21,a22,a23,a24,a25,n1,n2,g1,g2,d1,d2] = cards
+cards = [m11,m12,m13,m21,m22,m23,a11,a12,a13,a14,a15,a21,a22,a23,a24,a25,n1,n2,g1,g2,d1,d2]
+for i in range(22):
+    cards[i].grid(row=floor(slots[i]/7), column=slots[i]%7)
 table.mainloop()
