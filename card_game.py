@@ -47,13 +47,13 @@ def info(x):
           decode_card(x).efx+"\nefx_turn: "+
           str(decode_card(x).efx_turn))
 
-def show(x):
+def show():
     card_info.place(x=table.winfo_pointerx() - table.winfo_rootx(),y=table.winfo_pointery() - table.winfo_rooty())
-def hide(x):
+def hide():
     card_info.place_forget()
 
 info("0001")
-m11.bind("<Button-1>", lambda i:[hide(i),info("0001"),show(i)])
-m12.bind("<Button-1>", lambda i:[hide(i),info("0002"),show(i)])
-m13.bind("<Button-1>", lambda i:[hide(i),info("0003"),show(i)])
+m11.bind("<Button-1>", lambda i:[hide(),info("0001"),show()])
+m12.bind("<Button-1>", lambda i:[hide(),info("0002"),show()])
+m13.bind("<Button-1>", lambda i:[hide(),info("0003"),show()])
 frame.bind("<Button-1>", hide)
