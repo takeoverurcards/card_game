@@ -29,10 +29,19 @@ cards_info = [m11_info, m12_info, m13_info, m21_info, m22_info, m23_info, a11_in
 
 for i in json.load(open("card_master_list.json", "r"))["Cards"]:
     d1.append(i)
+    print(i)
 
 shuffle(d1)
-for i in range(2):
-    h1[d1[i]] = Label(frame2, width=13, height=4, relief=RAISED, text=decode_card(d1[i]).name, wraplength=100, justify="center")
+
+draw_count = 0
+
+def draw(x):
+    h1[d1[x]] = Label(frame2, name=d1[x], width=13, height=4, relief=RAISED, text=decode_card(d1[x]).name, wraplength=100, justify="center")
+    global draw_count
+    h1[list(h1)[-1]].grid(row=0,column=draw_count)
+    draw_count += 1
+    h1[list(h1)[-1]].bind("<Button-3>", lambda z:[hide_info(),info(str(z.widget)[-4:]),show_info()])
+    d1.pop(x)
 
 def info(x):
     global card_info
@@ -67,11 +76,11 @@ def update_field():
 update_field()
 
 info("0001")
-for i in range(len(cards)):
-    cards[i].bind("<Button-3>", lambda z:[hide_info(),info(cards_info[i]),show_info()])
+table.bind('<Return>',lambda z:draw(0))
+#for i in range(len(cards)):
+#    cards[i].bind("<Button-3>", lambda z:[hide_info(),info(cards_info[i]),show_info()])
 for i in range(len(h1)):
     h1[list(h1)[i]].grid(row=0,column=i)
-#h1["0001"].bind("<Button-3>", lambda z:[hide_info(),info("0001"),show_info()])
 frame.bind("<Button-3>", lambda z:hide_info())
 
 table.mainloop()
