@@ -54,8 +54,10 @@ def draw(x):
 def select_card(x):
     global selected_card
     global play_var
+    if selected_card:
+        selected_card.config(relief=RAISED,bg="white")
     selected_card = x
-    x.config(relief=RIDGE)
+    x.config(relief=RIDGE,bg="yellow")
     play_var = 1
     hide_info()
 
@@ -66,27 +68,31 @@ def play_card(x):
         if decode_card(str(selected_card)[-4:]).tribe.lower() != "item":
             cards_info[int(str(x)[-2:])] = str(selected_card)[-4:]
             h1[str(selected_card)[-8:]].grid_forget()
-            g1.append(str(selected_card)[-4:])
             del h1[str(selected_card)[-8:]]
+            hide_info()
             update_field()
             play_var = 0
-            print(cards_info)
+
+card_info = Label(table, justify="left")
 
 def info(x):
     global card_info
-    card_info = Label(table, justify="left",text=decode_card(x).name+"\ncost: "+
-          str(decode_card(x).cost)+"\npower: "+
-          str(decode_card(x).power)+"\nhealth: "+
-          str(decode_card(x).health)+"\ntribe: "+
-          decode_card(x).tribe+"\nmain: "+
-          decode_card(x).main+"\naux: "+
-          decode_card(x).aux+"\nmfx: "+
-          decode_card(x).mfx+"\nmfx_turn: "+
-          str(decode_card(x).mfx_turn)+"\nafx: "+
-          decode_card(x).afx+"\nafx_turn: "+
-          str(decode_card(x).afx_turn)+"\nefx: "+
-          decode_card(x).efx+"\nefx_turn: "+
-          str(decode_card(x).efx_turn))
+    if x:
+        card_info.config(text=decode_card(x).name+"\ncost: "+
+              str(decode_card(x).cost)+"\npower: "+
+              str(decode_card(x).power)+"\nhealth: "+
+              str(decode_card(x).health)+"\ntribe: "+
+              decode_card(x).tribe+"\nmain: "+
+              decode_card(x).main+"\naux: "+
+              decode_card(x).aux+"\nmfx: "+
+              decode_card(x).mfx+"\nmfx_turn: "+
+              str(decode_card(x).mfx_turn)+"\nafx: "+
+              decode_card(x).afx+"\nafx_turn: "+
+              str(decode_card(x).afx_turn)+"\nefx: "+
+              decode_card(x).efx+"\nefx_turn: "+
+              str(decode_card(x).efx_turn))
+    else:
+        hide_info()
 
 def show_info():
     card_info.place(x=table.winfo_pointerx() - table.winfo_rootx(),y=table.winfo_pointery() - table.winfo_rooty())
@@ -104,10 +110,10 @@ def update_field():
 
 update_field()
 
-info("0001")
+#info("0001")
 table.bind('<Return>',lambda z:draw(0))
 for i in range(len(cards)):
-    cards[i].bind("<Button-3>", lambda z:[hide_info(),info(cards_info[i]),show_info()])
+    cards[i].bind("<Button-3>", lambda z:[hide_info(),info(cards_info[int(str(z.widget)[-2:])]),show_info() if (z.widget["text"]) else hide_info()])
 frame.bind("<Button-3>", lambda z:hide_info())
 
 table.mainloop()
