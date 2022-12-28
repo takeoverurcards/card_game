@@ -1,9 +1,12 @@
 import json
 from os.path import exists
+from os import makedirs
 from pathlib import Path
 
 import tkinter as tk
 
+if not exists("decks"):
+    makedirs("decks")
 
 deck_min_size = 50
 deck_max_size = 60
