@@ -20,14 +20,16 @@ d2 = []
 h1 = {}
 h2 = {}
 card_slots = {}
+p1_health = p2_health = 3
+player_turn = 0
 
-m11 = m12 = m13 = m21 = m22 = m23 = a11 = a12 = a13 = a14 = a15 = a21 = a22 = a23 = a24 = a25 = n1 = n2 = ""
+m1_1 = m2_1 = m3_1 = m1_2 = m2_2 = m3_2 = a1_1 = a2_1 = a3_1 = a4_1 = a5_1 = a1_2 = a2_2 = a3_2 = a4_2 = a5_2 = n1 = n2 = ""
 
-m11_info = m12_info = m13_info = m21_info = m22_info = m23_info = a11_info = a12_info = a13_info = a14_info_info = a15_info = a21_info = a22_info = a23_info = a24_info = a25_info = n1_info = n2_info = ""
+m11_info = m12_info = m13_info = m21_info = m22_info = m23_info = a11_info = a12_info = a13_info = a14_info = a15_info = a21_info = a22_info = a23_info = a24_info = a25_info = n1_info = n2_info = ""
 
-cards = [m11,m12,m13,m21,m22,m23,a11,a12,a13,a14,a15,a21,a22,a23,a24,a25,n1,n2]
+cards = [m1_1,m2_1,m3_1,m1_2,m2_2,m3_2,a1_1,a2_1,a3_1,a4_1,a5_1,a1_2,a2_2,a3_2,a4_2,a5_2,n1,n2]
 
-cards_info = [m11_info, m12_info, m13_info, m21_info, m22_info, m23_info, a11_info, a12_info, a13_info, a14_info_info, a15_info, a21_info, a22_info, a23_info, a24_info, a25_info, n1_info, n2_info]    
+cards_info = [m11_info,m12_info,m13_info,m21_info,m22_info,m23_info,a11_info,a12_info,a13_info,a14_info,a15_info,a21_info,a22_info,a23_info,a24_info,a25_info,n1_info,n2_info]    
 
 for i in range(len(slots)):
     cards[i] = Label(frame, name="slot_"+str(i).zfill(2), width=15, height=10, relief=SUNKEN, wraplength=100, justify="center")
@@ -52,26 +54,29 @@ def draw(x):
     d1.pop(x)
 
 def select_card(x):
-    global selected_card
-    global play_var
+    global selected_card, play_var
     if selected_card:
         selected_card.config(relief=RAISED,bg="white")
     selected_card = x
     x.config(relief=RIDGE,bg="yellow")
     play_var = 1
     hide_info()
+    for i in [0,1,2,4,5,6,7,8]:
+        if decode_card(str(selected_card)[-4:]).tribe.lower() != "item" and not cards_info[(len(cards)>>1)+i]:
+            cards[(len(cards)>>1)+i].config(bg="orange")
 
 def play_card(x):
-    global selected_card
-    global play_var
-    if play_var:
-        if decode_card(str(selected_card)[-4:]).tribe.lower() != "item":
-            cards_info[int(str(x)[-2:])] = str(selected_card)[-4:]
-            h1[str(selected_card)[-8:]].grid_forget()
-            del h1[str(selected_card)[-8:]]
-            hide_info()
-            update_field()
-            play_var = 0
+    global selected_card, play_var
+    if play_var and decode_card(str(selected_card)[-4:]).tribe.lower() != "item" and int(str(x)[-2:]) in [9,10,11,13,14,15,16,17] and not cards_info[int(str(x)[-2:])]:
+        cards_info[int(str(x)[-2:])] = str(selected_card)[-4:]
+        h1[str(selected_card)[-8:]].grid_forget()
+        del h1[str(selected_card)[-8:]]
+        hide_info()
+        update_field()
+        play_var = 0
+        for i in range(len(cards_info)):
+            if not cards_info[i]:
+                cards[i].config(bg="gray")
 
 card_info = Label(table, justify="left")
 
