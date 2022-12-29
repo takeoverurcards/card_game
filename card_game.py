@@ -1,8 +1,11 @@
-from tkinter import *
 from math import *
+from random import *
+
+from tkinter import *
+
 from card_class import *
 from json_decoder import *
-from random import *
+
 
 table = Tk()
 table.resizable(width=0,height=0)
@@ -12,13 +15,12 @@ frame2 = Frame(table, bg="black")
 frame.pack()
 frame2.pack()
 
+card_info = Label(table, justify="left")
+
 slots = [1,2,3,4,5,7,9,10,11,16,17,18,20,22,23,24,25,26]
-g1 = []
-g2 = []
-d1 = []
-d2 = []
-h1 = {}
-h2 = {}
+g1 = g2 = d1 = d2 = []
+h1 = h2 = {}
+
 card_slots = {}
 p1_health = p2_health = 3
 player_turn = 0
@@ -43,6 +45,7 @@ shuffle(d1)
 
 draw_count = play_var = 0
 selected_card = ""
+
 
 def draw(x):
     global draw_count
@@ -78,8 +81,6 @@ def play_card(x):
             if not cards_info[i]:
                 cards[i].config(bg="gray")
 
-card_info = Label(table, justify="left")
-
 def info(x):
     global card_info
     if x:
@@ -112,6 +113,7 @@ def update_field():
         else:
             cards[i].config(bg="grey", relief=SUNKEN)
     table.update_idletasks()
+
 
 update_field()
 
