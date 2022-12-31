@@ -2,6 +2,9 @@ import random
 from tkinter import *
 from json_decoder import *
 
+import time
+
+start_time = time.time()
 
 class EntireGame:
     def __init__(self, d1, d2):
@@ -118,4 +121,7 @@ class EntireGame:
 
 test = EntireGame([], [])
 
+print(time.time() - start_time)
+
 test.table.mainloop()
+
