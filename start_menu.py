@@ -1,4 +1,5 @@
 from tkinter import *
+from runpy import run_path
 
 #create options menu
 def options():
@@ -13,7 +14,7 @@ def start():
     start_menu.config(bg="black")
     start_frame = Frame(start_menu, bg="black")
     start_lbl = Label(start_frame, bg="grey", width=50, height=15, text="[INSERT TEXT HERE]")
-    start_btn = Button(start_frame, text="NEW GAME", width=20, command=lambda:[start_menu.destroy(),exec(open("card_game.py").read())])
+    start_btn = Button(start_frame, text="NEW GAME", width=20, command=lambda:[start_menu.destroy(), run_path('card_game.py')])
     options_btn = Button(start_frame, text="OPTIONS", width=20, command=options)
     quit_btn = Button(start_frame, text="QUIT TO DESKTOP", width=20, command=start_menu.destroy)
     start_frame.pack()
