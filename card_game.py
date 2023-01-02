@@ -36,7 +36,7 @@ player_turn = 0 #turn of indicated player
 p1_draw_count = p2_draw_count = 0 #number of cards drawn for respective player
 selected_card = ""
 card_info = Label(info_frame, justify="left", height=100) #card information textbox
-cards = [Label(frame, name="slot_"+str(i).zfill(2), width=12, height=8, wraplength=60, justify="center") for i in range(18)] #list containing all card slots
+cards = [Label(frame, name="slot_"+str(i).zfill(2), width=12, height=8, justify="center") for i in range(18)] #list containing all card slots
 cards_info = ["" for i in range(18)] #list containing all card slot information
 d1_lbl = Label(frame, bg="brown", relief=RAISED, width=12, height=8)
 d2_lbl = Label(frame, bg="brown", relief=RAISED, width=12, height=8)
@@ -59,7 +59,7 @@ d2 = [f"{i}_{decode_card(i).power}_{decode_card(i).health}" for i in json.load(o
 def draw_p1(x):
     global p1_draw_count
     if d1:
-        h1[str(p1_draw_count).zfill(3)+"_"+d1[x][:4]] = Label(frame_p1, bg="white", name="1_"+str(p1_draw_count).zfill(3)+"_"+d1[x], width=12, height=4, relief=RAISED, text=decode_card(d1[x][:4]).name, wraplength=80, justify="center")
+        h1[str(p1_draw_count).zfill(3)+"_"+d1[x][:4]] = Label(frame_p1, bg="white", name="1_"+str(p1_draw_count).zfill(3)+"_"+d1[x], width=12, height=4, relief=RAISED, text=decode_card(d1[x][:4]).name, justify="center")
         h1[list(h1)[-1]].grid(row=0,column=p1_draw_count)
         p1_draw_count += 1
         h1[list(h1)[-1]].bind("<Button-1>", lambda z:select_card(z.widget) if player_turn == 1 else ())
@@ -169,6 +169,14 @@ for i in range(5):
     draw_p1(0)
     draw_p2(0)
 
+#setting label and frame sizes appropriately
+info_frame["width"] = int(table.winfo_width()) - int(end_frame.winfo_width())
+info_frame["height"] = int(end_frame.winfo_height())
+for i in cards:
+    i["wraplength"] = i.winfo_width() - 5
+for i in h1.values():
+    i["wraplength"] = i.winfo_width() - 5
+
 #initiating first turn
 player_turn = 2
 end_btn.pack_forget() if player_turn == 2 else end_btn.pack(expand=YES)
@@ -185,8 +193,6 @@ for i in range(5):
     d2.remove(b)
 update_field()
 end_turn()
-info_frame["width"] = int(table.winfo_width()) - int(end_frame.winfo_width())
-info_frame["height"] = int(end_frame.winfo_height())
 
 #executing game
 table.mainloop()
