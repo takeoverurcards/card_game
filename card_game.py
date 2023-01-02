@@ -2,11 +2,9 @@
 from tkinter import *
 from card_class import *
 from json_decoder import *
-from random import shuffle
+from random import shuffle, randint, choice
+from runpy import run_path
 
-#create game layout
-#def game():
-#    global p1_draw_count, p2_draw_count, card_info, selected_card, play_var
 #setting up playing area
 table = Tk() #main window
 table.title("[INSERT CARD GAME NAME HERE] by Take, Zoop, and Elite")
@@ -16,11 +14,15 @@ table.config(bg="black")
 frame = Frame(table, pady=60, bg="black") #main widget for slots
 frame_p2 = Frame(table, bg="black", height=66)
 frame_p1 = Frame(table, bg="black", height=66)
-info_frame = Frame(table, width=777, height=100)
-for i in [frame_p2,frame,frame_p1,info_frame]:
-    i.pack()
+info_frame = Frame(table, width=627, height=100)
+end_frame = Frame(table, relief=SUNKEN, width=150, height=100)
+info_frame.pack_propagate(False) #prevent frame resizing
+end_frame.pack_propagate(False)
+for i in [frame_p2,frame,frame_p1,info_frame,end_frame]:
+    i.pack(side=LEFT) if i == info_frame else i.pack()
+end_btn = Button(end_frame, width=10, height=2, text="END TURN", font=("Segoe UI",16), command=lambda:end_turn())
 p1_health = Label(frame, bg="black", fg="white", text="3", font=("Britannic Bold",48))
-p2_health = Label(frame, bg="black", fg="white",text="3", font=("Britannic Bold",48))
+p2_health = Label(frame, bg="black", fg="white", text="3", font=("Britannic Bold",48))
 p1_health.grid(row=3,column=0)
 p2_health.grid(row=0,column=6)
 
@@ -32,7 +34,6 @@ h1 = {} #hand of player 1
 h2 = {} #hand of player 2
 player_turn = 0 #turn of indicated player
 p1_draw_count = p2_draw_count = 0 #number of cards drawn for respective player
-play_var = False #indicator for play_card()
 selected_card = ""
 card_info = Label(info_frame, justify="left", height=100) #card information textbox
 cards = [Label(frame, name="slot_"+str(i).zfill(2), width=15, height=10, wraplength=100, justify="center") for i in range(18)] #list containing all card slots
@@ -41,35 +42,36 @@ d1_lbl = Label(frame, bg="brown", relief=RAISED, width=15, height=10)
 d2_lbl = Label(frame, bg="brown", relief=RAISED, width=15, height=10)
 d1_lbl.grid(row=2,column=0)
 d2_lbl.grid(row=1,column=6)
-d1_lbl.bind("<Button-1>", lambda z:draw_p1(0))
 
 #creating card slots
 for i,j in enumerate(slots):
     cards[i].grid(row=int(j/7), column=j%7)
-    cards[i].bind("<Button-1>", lambda z:play_card(z.widget))
+    cards[i].bind("<Button-1>", lambda z:select_card(a) if (a := z.widget)["text"] and int(str(a)[-2:]) in [9,10,11] else [play_card(a),attack(a)])
+for i in range(6,12):
+    cards[i].can_atk = 0
 
 #loading current decks
-d1 = [i for i in json.load(open("card_master_list.json", "r"))["Cards"]]
-d2 = [i for i in json.load(open("card_master_list.json", "r"))["Cards"]]
+d1 = [f"{i}_{decode_card(i).power}_{decode_card(i).health}" for i in json.load(open("card_master_list.json", "r"))["Cards"]]
+d2 = [f"{i}_{decode_card(i).power}_{decode_card(i).health}" for i in json.load(open("card_master_list.json", "r"))["Cards"]]
 
 #creating gameplay functions
 ###draw a card from player 1's deck to their hand
 def draw_p1(x):
     global p1_draw_count
-    if d1 and not play_var:
-        h1[str(p1_draw_count).zfill(3)+"_"+d1[x]] = Label(frame_p1, name="1_"+str(p1_draw_count).zfill(3)+"_"+d1[x], width=13, height=4, relief=RAISED, text=decode_card(d1[x]).name, wraplength=90, justify="center")
+    if d1:
+        h1[str(p1_draw_count).zfill(3)+"_"+d1[x][:4]] = Label(frame_p1, bg="white", name="1_"+str(p1_draw_count).zfill(3)+"_"+d1[x], width=13, height=4, relief=RAISED, text=decode_card(d1[x][:4]).name, wraplength=90, justify="center")
         h1[list(h1)[-1]].grid(row=0,column=p1_draw_count)
         p1_draw_count += 1
-        h1[list(h1)[-1]].bind("<Button-1>", lambda z:select_card(z.widget))
-        h1[list(h1)[-1]].bind("<Button-3>", lambda z:[card_info.pack_forget(),info(str(z.widget)[-4:]),card_info.pack()])
+        h1[list(h1)[-1]].bind("<Button-1>", lambda z:select_card(z.widget) if player_turn == 1 else ())
+        h1[list(h1)[-1]].bind("<Button-3>", lambda z:[card_info.pack_forget(),info(str(z.widget)[-8:]),card_info.pack()] if player_turn == 1 else card_info.pack_forget())
         d1.pop(x)
         update_field()
 
 ###draw a card from player 2's deck to their hand
 def draw_p2(x):
     global p2_draw_count
-    if d2 and not play_var:
-        h2[str(p2_draw_count).zfill(3)+"_"+d2[x]] = Label(frame_p2, bg="brown", name="2_"+str(p2_draw_count).zfill(3)+"_"+d2[x], width=13, height=4, relief=RAISED)
+    if d2:
+        h2[str(p2_draw_count).zfill(3)+"_"+d2[x][:4]] = Label(frame_p2, bg="brown", name="2_"+str(p2_draw_count).zfill(3)+"_"+d2[x][:4], width=13, height=4, relief=RAISED)
         h2[list(h2)[-1]].grid(row=0,column=p2_draw_count)
         p2_draw_count += 1
         d2.pop(x)
@@ -77,49 +79,81 @@ def draw_p2(x):
 
 ###select a card to play from the hand
 def select_card(x):
-    global selected_card, play_var
+    update_field()
+    global selected_card
     if selected_card:
-        selected_card.config(relief=RAISED,bg="white")
-    selected_card = x
-    x.config(relief=RIDGE,bg="yellow")
-    play_var = True
-    card_info.pack_forget()
-    for i in [9,10,11,13,14,15,16,17]:
-        if decode_card(str(selected_card)[-4:]).tribe.lower() != "item" and not cards_info[i]:
-            cards[i].config(bg="orange")
+        selected_card.config(relief=RAISED, bg="white")
+    if x in h1.values():
+        selected_card = x
+        x.config(relief=RIDGE, bg="yellow")
+        card_info.pack_forget()
+        for i in [9,10,11,13,14,15,16,17]:
+            cards[i].config(bg="orange") if not cards_info[i] else ()
+    elif x.can_atk:
+        selected_card = x
+        x.config(relief=RIDGE, bg="yellow")
+        card_info.pack_forget()
+        for i in range(6,9):
+            cards[i].config(bg="orange") if cards_info[i] else ()
 
 ###play selected card
 def play_card(x):
-    global selected_card, play_var
-    if play_var and decode_card(str(selected_card)[-4:]).tribe.lower() != "item" and int(str(x)[-2:]) in [9,10,11,13,14,15,16,17] and not cards_info[int(str(x)[-2:])]:
-        cards_info[int(str(x)[-2:])] = str(selected_card)[-4:]
-        h1[str(selected_card)[-8:]].grid_forget()
-        del h1[str(selected_card)[-8:]]
+    global selected_card
+    if x["bg"] == "orange" and selected_card in h1.values():
+        cards_info[int(str(x)[-2:])] = str(selected_card)[-8:]
+        x.can_atk = 1
+        h1[str(selected_card)[-12:-4]].grid_forget()
+        del h1[str(selected_card)[-12:-4]]
         card_info.pack_forget()
         update_field()
-        play_var = False
+
+def attack(x):
+    global selected_card
+    if x["bg"] == "orange":
+        a = cards_info[int(str(x)[-2:])]
+        b = int(cards_info[int(str(selected_card)[-2:])][5])
+        if b >= int(a[-1]):
+            cards_info[int(str(x)[-2:])] = ""
+        else:
+            cards_info[int(str(x)[-2:])] = a[:-1]+str(int(a[-1])-b)
+        selected_card.can_atk = 0
+        update_field()
+    
+def end_turn():
+    global player_turn, end_btn
+    player_turn = 3 - player_turn
+    end_btn.pack_forget() if player_turn == 2 else end_btn.pack(expand=YES)
+    for i in cards:
+        if i["bg"] == "orange":
+            i.config(bg="grey")
+    for i in h1.values():
+        if i["bg"] == "yellow":
+            i.config(relief=RAISED, bg="white")
+    selected_card = ""
+    info("")
+    update_field()
 
 ###update card information textbox
 def info(x):
     global card_info
     newline = "\n"
-    card_info.config(text=(f"{decode_card(x).name}"
-                    f"   [{str(decode_card(x).power)} / {str(decode_card(x).health)}]"
-                    f"   ({decode_card(x).main}"
-                    f"{' / '+decode_card(x).aux+')' if decode_card(x).aux else ')'}"
-                    f"   {decode_card(x).tribe.upper()}   Cost: {str(decode_card(x).cost)}"
-                    f"{newline+'Main effect: '+decode_card(x).mfx if decode_card(x).mfx else ''}"
-                    f"{newline+'Aux effect: '+decode_card(x).afx if decode_card(x).afx else ''}"
-                    f"{newline+'Equip effect: '+decode_card(x).efx if decode_card(x).efx else ''}"
-                    ), width=info_frame.winfo_width(), wraplength=info_frame.winfo_width()) if x else card_info.pack_forget()
+    card_info.pack_forget() if not (a := x[:4]) else card_info.config(text=(f"{(b := decode_card(a)).name}"
+                    f"   [{x[5]} / {x[7]}]"
+                    f"   ({b.main}"
+                    f"{' / '+b.aux+')' if b.aux else ')'}"
+                    f"   {b.tribe.upper()}   Cost: {str(b.cost)}"
+                    f"{newline+'Main effect: '+b.mfx if b.mfx else ''}"
+                    f"{newline+'Aux effect: '+b.afx if b.afx else ''}"
+                    f"{newline+'Equip effect: '+b.efx if b.efx else ''}"
+                    ), width=info_frame.winfo_width(), wraplength=info_frame.winfo_width())
 
 ###update visuals of all slots
 def update_field():
     for i,j in enumerate(cards_info):
         if j:
-            cards[i].config(bg="white", relief=RAISED, text=decode_card(j).name)
+            cards[i].config(bg="white", relief=RAISED, text=f"{decode_card(j[:4]).name}\n\n{j[5]} / {j[7]}")
         else:
-            cards[i].config(bg="grey", relief=SUNKEN)
+            cards[i].config(bg="grey", relief=SUNKEN, text="")
     d1_lbl.config(bg="brown", relief=RAISED) if d1 else d1_lbl.config(bg="grey", relief=SUNKEN)
     d2_lbl.config(bg="brown", relief=RAISED) if d2 else d2_lbl.config(bg="grey", relief=SUNKEN)
     table.update_idletasks()
@@ -127,17 +161,29 @@ def update_field():
 #adding card information textbox functionality
 frame.bind("<Button-3>", lambda z:card_info.pack_forget())
 for i in cards:
-    i.bind("<Button-3>", lambda z:[card_info.pack_forget(),info(cards_info[int(str(z.widget)[-2:])]),card_info.pack() if (z.widget["text"]) else card_info.pack_forget()])
+    i.bind("<Button-3>", lambda z:[card_info.pack_forget(), info(cards_info[int(str(z.widget)[-2:])]), card_info.pack() if (z.widget["text"]) and player_turn == 1 else card_info.pack_forget()])
 
-#DEBUGGING ONLY
-#table.bind("<Return>",lambda z:draw(0))
-table.bind("<Escape>",lambda z:[table.destroy(),start()])
-
-#occupying beginning hands
+#occupying starting hands
 shuffle(d1)
 for i in range(5):
     draw_p1(0)
     draw_p2(0)
+
+#initiating first turn
+player_turn = 2
+end_btn.pack_forget() if player_turn == 2 else end_btn.pack(expand=YES)
+
+#DEBUGGING ONLY
+table.bind("<Escape>",lambda z:[table.destroy(),run_path('start_menu.py')])
+c = [0,1,2,3,4,6,7,8]
+for i in range(5):
+    a = choice(c)
+    b = choice(d2)
+    cards_info[a] = b
+    c.remove(a)
+    d2.remove(b)
+update_field()
+end_turn()
 
 #executing game
 table.mainloop()
