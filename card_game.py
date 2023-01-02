@@ -8,19 +8,19 @@ from runpy import run_path
 #setting up playing area
 table = Tk() #main window
 table.title("[INSERT CARD GAME NAME HERE] by Take, Zoop, and Elite")
-table.geometry("777x976+0+0")
+#table.geometry("777x976+0+0")
 table.resizable(0,0) #prevents manual window resizing
 table.config(bg="black")
-frame = Frame(table, pady=60, bg="black") #main widget for slots
-frame_p2 = Frame(table, bg="black", height=66)
-frame_p1 = Frame(table, bg="black", height=66)
-info_frame = Frame(table, width=627, height=100)
-end_frame = Frame(table, relief=SUNKEN, width=150, height=100)
-info_frame.pack_propagate(False) #prevent frame resizing
+frame = Frame(table, pady=30, bg="black") #main widget for slots
+frame_p2 = Frame(table, bg="black")
+frame_p1 = Frame(table, bg="black")
+info_frame = Frame(table, height=60)
+end_frame = Frame(table, relief=SUNKEN, width=100, height=70)
+info_frame.pack_propagate(False)
 end_frame.pack_propagate(False)
 for i in [frame_p2,frame,frame_p1,info_frame,end_frame]:
     i.pack(side=LEFT) if i == info_frame else i.pack()
-end_btn = Button(end_frame, width=10, height=2, text="END TURN", font=("Segoe UI",16), command=lambda:end_turn())
+end_btn = Button(end_frame, width=9, height=2, text="END TURN", font=("Segoe UI",12), command=lambda:end_turn())
 p1_health = Label(frame, bg="black", fg="white", text="3", font=("Britannic Bold",48))
 p2_health = Label(frame, bg="black", fg="white", text="3", font=("Britannic Bold",48))
 p1_health.grid(row=3,column=0)
@@ -36,10 +36,10 @@ player_turn = 0 #turn of indicated player
 p1_draw_count = p2_draw_count = 0 #number of cards drawn for respective player
 selected_card = ""
 card_info = Label(info_frame, justify="left", height=100) #card information textbox
-cards = [Label(frame, name="slot_"+str(i).zfill(2), width=15, height=10, wraplength=100, justify="center") for i in range(18)] #list containing all card slots
+cards = [Label(frame, name="slot_"+str(i).zfill(2), width=12, height=8, wraplength=60, justify="center") for i in range(18)] #list containing all card slots
 cards_info = ["" for i in range(18)] #list containing all card slot information
-d1_lbl = Label(frame, bg="brown", relief=RAISED, width=15, height=10)
-d2_lbl = Label(frame, bg="brown", relief=RAISED, width=15, height=10)
+d1_lbl = Label(frame, bg="brown", relief=RAISED, width=12, height=8)
+d2_lbl = Label(frame, bg="brown", relief=RAISED, width=12, height=8)
 d1_lbl.grid(row=2,column=0)
 d2_lbl.grid(row=1,column=6)
 
@@ -59,7 +59,7 @@ d2 = [f"{i}_{decode_card(i).power}_{decode_card(i).health}" for i in json.load(o
 def draw_p1(x):
     global p1_draw_count
     if d1:
-        h1[str(p1_draw_count).zfill(3)+"_"+d1[x][:4]] = Label(frame_p1, bg="white", name="1_"+str(p1_draw_count).zfill(3)+"_"+d1[x], width=13, height=4, relief=RAISED, text=decode_card(d1[x][:4]).name, wraplength=90, justify="center")
+        h1[str(p1_draw_count).zfill(3)+"_"+d1[x][:4]] = Label(frame_p1, bg="white", name="1_"+str(p1_draw_count).zfill(3)+"_"+d1[x], width=12, height=4, relief=RAISED, text=decode_card(d1[x][:4]).name, wraplength=80, justify="center")
         h1[list(h1)[-1]].grid(row=0,column=p1_draw_count)
         p1_draw_count += 1
         h1[list(h1)[-1]].bind("<Button-1>", lambda z:select_card(z.widget) if player_turn == 1 else ())
@@ -71,7 +71,7 @@ def draw_p1(x):
 def draw_p2(x):
     global p2_draw_count
     if d2:
-        h2[str(p2_draw_count).zfill(3)+"_"+d2[x][:4]] = Label(frame_p2, bg="brown", name="2_"+str(p2_draw_count).zfill(3)+"_"+d2[x][:4], width=13, height=4, relief=RAISED)
+        h2[str(p2_draw_count).zfill(3)+"_"+d2[x][:4]] = Label(frame_p2, bg="brown", name="2_"+str(p2_draw_count).zfill(3)+"_"+d2[x][:4], width=12, height=3, relief=RAISED)
         h2[list(h2)[-1]].grid(row=0,column=p2_draw_count)
         p2_draw_count += 1
         d2.pop(x)
@@ -145,7 +145,7 @@ def info(x):
                     f"{newline+'Main effect: '+b.mfx if b.mfx else ''}"
                     f"{newline+'Aux effect: '+b.afx if b.afx else ''}"
                     f"{newline+'Equip effect: '+b.efx if b.efx else ''}"
-                    ), width=info_frame.winfo_width(), wraplength=info_frame.winfo_width())
+                    ), width=info_frame.winfo_width(), wraplength=info_frame.winfo_width(), font=("Segoe UI", 8))
 
 ###update visuals of all slots
 def update_field():
@@ -174,6 +174,7 @@ player_turn = 2
 end_btn.pack_forget() if player_turn == 2 else end_btn.pack(expand=YES)
 
 #DEBUGGING ONLY
+d1_lbl.bind("<Button-1>",lambda z:(draw_p1(0)))
 table.bind("<Escape>",lambda z:[table.destroy(),run_path('start_menu.py')])
 c = [0,1,2,3,4,6,7,8]
 for i in range(5):
@@ -184,6 +185,8 @@ for i in range(5):
     d2.remove(b)
 update_field()
 end_turn()
+info_frame["width"] = int(table.winfo_width()) - int(end_frame.winfo_width())
+info_frame["height"] = int(end_frame.winfo_height())
 
 #executing game
 table.mainloop()
