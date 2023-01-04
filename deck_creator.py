@@ -40,7 +40,8 @@ def add_card_to_deck():
         return
     card_id = card_list[card_listbox.curselection()[0]]
     if card_id in deck_dict:
-        deck_dict[card_id] += 1
+        if deck_dict[card_id] < 99: # prevents having >99 cards in a deck   
+            deck_dict[card_id] += 1
     else:
         deck_dict[card_id] = 1
     update_deck_listbox()
