@@ -3,7 +3,10 @@ from tkinter import *
 from card_class import *
 from json_decoder import *
 from random import shuffle, choice
-from runpy import run_path
+from card_functions import *
+
+#initialize card functions file
+exec(open("./card_functions.py").read())
 
 #setting up playing area
 table = Tk() #main window
@@ -56,90 +59,6 @@ for i in [*p2_mains,*p1_mains]:
 d1 = [f"{i}_{decode_card(i).power}_{decode_card(i).health}" for i in json.load(open("card_master_list.json", "r"))["Cards"]]
 d2 = [f"{i}_{decode_card(i).power}_{decode_card(i).health}" for i in json.load(open("card_master_list.json", "r"))["Cards"]]
 
-#creating gameplay functions
-###retrieve slot number from label name
-def slot_num(x):
-    return int(str(x)[-2:])
-
-###draw a card from player 1's deck to their hand
-def draw_p1(x):
-    global p1_draw_count
-    if d1:
-        h1[f"{str(p1_draw_count).zfill(3)}_{d1[x][:4]}"] = Label(frame_p1, bg="white", name=f"1_{str(p1_draw_count).zfill(3)}_{d1[x]}", width=12, height=4, relief=RAISED, text=decode_card(d1[x][:4]).name, justify="center")
-        (a := h1[list(h1)[-1]]).grid(row=0,column=p1_draw_count)
-        p1_draw_count += 1
-        a.bind("<Button-1>", lambda z:select_card(z.widget) if player_turn == 1 else ())
-        a.bind("<Button-3>", lambda z:info(str(z.widget)[-8:]))
-        d1.pop(x)
-        update_field()
-        a["wraplength"] = h1[list(h1)[0]].winfo_width() - 10
-        
-###draw a card from player 2's deck to their hand
-def draw_p2(x):
-    global p2_draw_count
-    if d2:
-        h2[f"{str(p2_draw_count).zfill(3)}_{d2[x][:4]}"] = Label(frame_p2, bg="brown", name=f"2_{str(p2_draw_count).zfill(3)}_{d2[x]}", width=12, height=3, relief=RAISED)
-        h2[list(h2)[-1]].grid(row=0,column=p2_draw_count)
-        p2_draw_count += 1
-        d2.pop(x)
-        update_field()
-
-###select a card to play from the hand
-def select_card(x):
-    global selected_card
-    update_field()
-    card_info.pack_forget()
-    if x in h1.values():
-        selected_card.config(relief=RAISED, bg="white") if selected_card else ()
-        (selected_card := x).config(relief=RIDGE, bg="yellow")
-        for i in [*p1_mains,*p1_auxes]:
-            cards[i].config(bg="orange") if not cards_info[i] else ()
-    elif slot_num(x) in [*p1_mains,*p1_auxes]:
-        selected_card.config(relief=RAISED, bg="white") if selected_card else ()
-        (selected_card := x).config(relief=RIDGE, bg="yellow")
-        if slot_num(x) in p1_mains:
-            for i in p2_mains:
-                cards[i].config(bg="orange") if cards_info[i] and x.can_atk else ()
-
-###play selected card
-def play_card(x):
-    global selected_card
-    if x["bg"] == "orange" and selected_card in h1.values():
-        cards_info[slot_num(x)] = str(selected_card)[-8:]
-        h1.pop(str(selected_card)[-12:-4]).grid_forget()
-        x.can_atk = 1
-        update_field()
-    elif selected_card in h2.values():
-        cards_info[slot_num(x)] = str(selected_card)[-8:]
-        h2.pop(str(selected_card)[-12:-4]).grid_forget()
-        x.can_atk = 1
-        update_field()
-    card_info.pack_forget()
-
-###call an attack
-def attack(x):
-    global selected_card
-    if x["bg"] == "orange" and selected_card.can_atk:
-        a = cards_info[slot_num(x)]
-        b = int(cards_info[slot_num(selected_card)][5])
-        cards_info[slot_num(x)] = "" if b >= int(a[-1]) else f"{a[:-1]}{str(int(a[-1])-b)}"
-        selected_card.can_atk = 0
-        update_field()
-
-###end the current player's turn    
-def end_turn():
-    global player_turn
-    player_turn = 3 - player_turn
-    end_btn.pack_forget() if player_turn == 2 else end_btn.pack(expand=YES)
-    for i in [*p2_mains,*p1_mains]:
-        cards[i].can_atk = int(bool(player_turn-(i-2)//3)) if cards_info[i] else 0
-    for i in h1.values():
-        i.config(relief=RAISED, bg="white") if i["bg"] == "yellow" else ()
-    selected_card = ""
-    card_info.pack_forget()
-    update_field()
-    print([cards[x].can_atk for x in [*p2_mains,*p1_mains]])
-
 ###update card information textbox
 def info(x):
     global card_info
@@ -180,15 +99,15 @@ info_frame["width"] = int(table.winfo_width()) - int(end_frame.winfo_width())
 info_frame["height"] = int(end_frame.winfo_height())
 for i in cards:
     i["wraplength"] = i.winfo_width() - 10
-for i in h1.values():
-    i["wraplength"] = i.winfo_width() - 10
+#for i in h1.values():
+#    i["wraplength"] = i.winfo_width() - 10
 
 #initiating first turn
 player_turn = 2
 end_btn.pack_forget() if player_turn == 2 else end_btn.pack(expand=YES)
 
 #DEBUGGING ONLY
-d1_lbl.bind("<Button-1>",lambda z:draw_p1(0))
+d1_lbl.bind("<Button-1>",lambda z:draw_p1(0) if player_turn == 1 else ())
 table.bind("<Escape>",lambda z:[table.destroy(),run_path('start_menu.py')])
 shuffle(c := list(range(8)))
 while h2:
